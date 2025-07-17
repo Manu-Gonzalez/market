@@ -8,12 +8,11 @@ datasource db {
 }
 
 model Productos {
-  id           Int     @id @default(autoincrement())
-  nombre       String? @db.Char(40)
-  precio       Float?  @db.Float
-  id_categoria Int
-
-  categoria Categorias @relation(fields: [id_categoria], references: [id_categoria])
+  id            Int        @id @default(autoincrement())
+  nombre        String?    @db.Char(40)
+  precio_unidad Float?     @db.Float
+  id_categoria  Int
+  categoria     Categorias @relation(fields: [id_categoria], references: [id_categoria])
 }
 
 model Users {
