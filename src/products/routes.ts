@@ -1,8 +1,8 @@
 import ProductController from './controller'
 import  express  from 'express';
-import {bodyValidator} from '../shared/utils/bodyJsonMiddleware'
-import {paramsValidator} from '../shared/utils/paramsMiddleware'
-import {queryValidator} from '../shared/utils/queryMiddleware'
+import {bodyValidator} from '../shared/middlewares/bodyJsonMiddleware'
+import {paramsValidator} from '../shared/middlewares/paramsMiddleware'
+import {queryValidator} from '../shared/middlewares/queryMiddleware'
 import Schema from './productSchema';
 
 

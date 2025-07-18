@@ -114,6 +114,8 @@
     "baseUrl" : "./",
     "paths": {
       "@products/*" : ["src/products/*"],
+      "@config/*" : ["src/config/*"],
+      "@auth/*" : ["src/auth/*"],
       
     }
   }

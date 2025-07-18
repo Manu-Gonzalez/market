@@ -9,7 +9,6 @@ interface Product {
 
 type ControllerFunctions = (req: Request, res: Response, next: NextFunction) => void
 
-
 export default class ProductController {
   public  getProducts : ControllerFunctions = async (req, res, next) => {
     try {
