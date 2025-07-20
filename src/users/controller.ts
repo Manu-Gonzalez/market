@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "@config/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import GenericError from "src/shared/utils/GenericError";
 
 const JWT_SECRET = process.env.JWT_SECRET || "mi_clave_secreta"; // Usa .env
 
@@ -67,9 +68,9 @@ export default class UserController {
         message: `Bienvenido ${user.username}`,
         token,
       });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Error en el login" });
+    } catch (e) {
+      console.error(e);
+      next(e)
     }
   };
 };

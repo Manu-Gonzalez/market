@@ -35,6 +35,9 @@ importers:
       nodemailer:
         specifier: ^7.0.5
         version: 7.0.5
+      pnpm:
+        specifier: ^10.13.1
+        version: 10.13.1
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -1146,6 +1149,11 @@ packages:
   plimit-lit@1.6.1:
     resolution: {integrity: sha512-B7+VDyb8Tl6oMJT9oSO2CW8XC/T4UcJGrwOVoNGwOQsQYhlpfajmrMj5xeejqaASq3V/EqThyOeATEOMuSEXiA==}
     engines: {node: '>=12'}
+
+  pnpm@10.13.1:
+    resolution: {integrity: sha512-N+vxpcejDV+r4MXfRO6NpMllygxa89urKMOhaBtwolYhjQXIHJwNz3Z+9rhVHrW5YAQrntQwDFkkIzY3fgHPrQ==}
+    engines: {node: '>=18.12'}
+    hasBin: true
 
   preserve@0.2.0:
     resolution: {integrity: sha512-s/46sYeylUfHNjI+sA/78FAHlmIuKqI9wNnzEOGehAlUUYeObv5C2mOinXBjyUyWmJ2SfcS2/ydApH4hTF4WXQ==}
@@ -2689,6 +2697,8 @@ snapshots:
   plimit-lit@1.6.1:
     dependencies:
       queue-lit: 1.5.2
+
+  pnpm@10.13.1: {}
 
   preserve@0.2.0: {}
 

@@ -8,29 +8,44 @@ datasource db {
 }
 
 model Productos {
-  id            Int        @id @default(autoincrement())
-  nombre        String?    @db.Char(40)
-  precio_unidad Float?     @db.Float
-  id_categoria  Int
-  categoria     Categorias @relation(fields: [id_categoria], references: [id_categoria])
+  id            Int          @id @default(autoincrement())
+  nombre        String       @db.VarChar(40)
+  precioUnidad  Float        @db.Float
+  categoriaId   Int
+  categoria     Categorias   @relation(fields: [categoriaId], references: [id])
+  pedidos       PedidoProducto[]
 }
 
 model Users {
-  id       Int     @id @default(autoincrement())
-  username String? @db.VarChar(40)
-  email    String? @db.VarChar(40)
-  password String? @db.VarChar(50)
+  id       Int       @id @default(autoincrement())
+  username String    @db.VarChar(40)
+  email    String    @db.VarChar(100) @unique
+  password String    @db.VarChar(100)
+  pedidos  Pedidos[]
 }
 
 model Categorias {
-  id_categoria Int     @id @default(autoincrement())
-  nombre       String? @db.VarChar(30)
-
-  productos Productos[] // relacion uno a muchos
+  id        Int         @id @default(autoincrement())
+  nombre    String      @db.VarChar(30)
+  productos Productos[]
 }
 
-// model Pedidos {
-//   id_pedido    Int         @id @default(autoincrement())
-//   cliente       String?     @db.Char(40)
-//   total       Float?      @db.Float
-// }
+model Pedidos {
+  id        Int              @id @default(autoincrement())
+  clienteId Int
+  cliente   Users            @relation(fields: [clienteId], references: [id])
+  estado    String           @db.VarChar(30)
+  fecha     DateTime         @default(now())
+  total     Float            @db.Float
+  productos PedidoProducto[]
+}
+
+model PedidoProducto {
+  id         Int        @id @default(autoincrement())
+  pedidoId   Int
+  productoId Int
+  cantidad   Int
+
+  pedido     Pedidos    @relation(fields: [pedidoId], references: [id])
+  producto   Productos  @relation(fields: [productoId], references: [id])
+}
