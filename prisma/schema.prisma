@@ -8,20 +8,21 @@ datasource db {
 }
 
 model Productos {
-  id            Int          @id @default(autoincrement())
-  nombre        String       @db.VarChar(40)
-  precioUnidad  Float        @db.Float
-  categoriaId   Int
-  categoria     Categorias   @relation(fields: [categoriaId], references: [id])
+  id            Int              @id @default(autoincrement())
+  nombre        String           @db.VarChar(40)
+  precio_unidad Float            @db.Float
+  id_categoria  Int
+  categoria     Categorias       @relation(fields: [id_categoria], references: [id])
   pedidos       PedidoProducto[]
 }
 
 model Users {
-  id        Int            @id @default(autoincrement())
-  username  String         @unique
-  email     String         @unique
-  password  String
-  tokens    RefreshToken[] // Relación uno a muchos
+  id       Int            @id @default(autoincrement())
+  username String         @unique
+  email    String         @unique
+  password String
+  tokens   RefreshToken[]
+  pedidos  Pedidos[]      @relation("PedidosCliente")
 }
 
 model RefreshToken {
@@ -33,7 +34,6 @@ model RefreshToken {
   expiresAt DateTime
 }
 
-
 model Categorias {
   id        Int         @id @default(autoincrement())
   nombre    String      @db.VarChar(30)
@@ -43,7 +43,7 @@ model Categorias {
 model Pedidos {
   id        Int              @id @default(autoincrement())
   clienteId Int
-  cliente   Users            @relation(fields: [clienteId], references: [id])
+  cliente   Users            @relation("PedidosCliente", fields: [clienteId], references: [id])
   estado    String           @db.VarChar(30)
   fecha     DateTime         @default(now())
   total     Float            @db.Float
@@ -51,11 +51,11 @@ model Pedidos {
 }
 
 model PedidoProducto {
-  id         Int        @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   pedidoId   Int
   productoId Int
   cantidad   Int
 
-  pedido     Pedidos    @relation(fields: [pedidoId], references: [id])
-  producto   Productos  @relation(fields: [productoId], references: [id])
+  pedido   Pedidos   @relation(fields: [pedidoId], references: [id])
+  producto Productos @relation(fields: [productoId], references: [id])
 }

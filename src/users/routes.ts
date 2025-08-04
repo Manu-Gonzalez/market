@@ -14,4 +14,6 @@ userRoutes.post('/register', controller.register) ;
 
 userRoutes.post('/login', controller.login) ;
 
+userRoutes.delete('/logout', controller.logout) ;
+
 export default userRoutes ;

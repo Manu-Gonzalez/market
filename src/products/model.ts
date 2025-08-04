@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express'
-import { QueryResult } from 'mysql2';
 
 // export default  interface User {
 //     id: number ,

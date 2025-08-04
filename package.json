@@ -15,19 +15,18 @@
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dependencies": "^0.0.1",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "cookie-parser": "^1.4.7",
     "module": "^1.2.5",
     "nodemailer": "^7.0.5",
-    "pnpm": "^10.13.1",
-    "zod": "^3.25.76",
-    "zoo": "^0.1.10"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "prisma": "^6.11.1",

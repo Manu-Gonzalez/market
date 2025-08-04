@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const controller_1 = __importDefault(require("./controller"));
 const express_1 = __importDefault(require("express"));
-const paramsMiddleware_1 = require("../shared/utils/paramsMiddleware");
+const paramsMiddleware_1 = require("../shared/middlewares/paramsMiddleware");
 const productSchema_1 = __importDefault(require("./productSchema"));
 const router = express_1.default.Router();
 const controller = new controller_1.default;

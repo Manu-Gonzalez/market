@@ -39,30 +39,29 @@ export default class UserController {
     try {
       const { username, password } = req.body;
 
-      // Buscar usuario
       const user = await prisma.users.findFirst({ where: { username } });
       if (!user || !user.password) {
         return res.status(401).json({ message: "Credenciales incorrectas" });
       }
 
-      // Validar contraseña
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ message: "Credenciales incorrectas" });
 
-      // Crear payload para el Access Token
       const payload: Payload = {
         id: user.id,
         username: user.username ?? "",
         email: user.email ?? "",
       };
 
-      // Generar Access Token (expira rápido)
-      const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
+      if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
+        throw new Error("JWT_SECRET o REFRESH_SECRET no están definidos");
+      }
 
-      // Generar Refresh Token (expira en 7 días)
-      const refreshToken = jwt.sign({ id: user.id }, REFRESH_SECRET, { expiresIn: "7d" });
+      const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
+      const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_SECRET, { expiresIn: "7d" });
+      console.log("Access Token:", accessToken);
+      console.log("Refresh Token:", refreshToken);
 
-      // Guardar Refresh Token en la base de datos
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
@@ -74,25 +73,58 @@ export default class UserController {
         },
       });
 
-      // Configurar cookies seguras
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: false,
         sameSite: "lax",
-        maxAge: 1000 * 60 * 15, // 15 minutos
+        maxAge: 1000 * 60 * 15
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: false,
         sameSite: "lax",
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
       });
 
-      return res.status(200).json({ message: `Bienvenido ${user.username}` });
+      return res.status(200).json({
+           message: `Bienvenido ${user.username}`,
+           token: accessToken,
+           refreshToken: refreshToken,
+        }
+      );
     } catch (e) {
       console.error(e);
       next(e);
     }
   };
+
+  public logout = async (req: Request, res: Response) => {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
+      
+      return res.status(200).json({ message: "Sesión cerrada" });
+    }
+
+    try {
+      await prisma.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
+      return res.status(200).json({ message: "Sesión cerrada correctamente" });
+    } catch (error) {
+
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+      return res.status(200).json({ message: "Sesión cerrada" });
+    }
+  };
 }
+

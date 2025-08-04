@@ -1,24 +1,30 @@
 import { Request, Response, NextFunction } from "express";
-const jwt = require('jsonwebtoken') ;
+import jwt from "jsonwebtoken";
 
-const secretKey = process.env.JWT_SECRET ;
+const secretKey = process.env.JWT_SECRET!;
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.cookies?.accessToken ;
+  let token: string | undefined;
 
-  if (!authHeader) {
+  if (req.cookies?.accessToken) {
+    token = req.cookies.accessToken;
+    console.log(req.cookies.accessToken);
+  }
+  else if (req.headers.authorization) {
+    const [type, value] = req.headers.authorization.split(" ");
+    if (type !== "Bearer" || !value) {
+      return res.status(400).json({
+        message: "Formato incorrecto, debe ser: Authorization: Bearer MiToken1234",
+      });
+    }
+    token = value;
+  }
+  // Si no hay token en ninguno de los dos
+  if (!token) {
     return res.status(401).json({ message: "Token no encontrado" });
   }
 
-  const [type, token] = authHeader.split(" ");
-
-  if (type !== "Bearer" || !token) {
-    return res.status(400).json({
-      message:
-        "Formato incorrecto, el header debe ser: Authorization: Bearer MiToken1234",
-    });
-  }
-
+  // Verificar JWT
   try {
     const decoded = jwt.verify(token, secretKey);
     (req as any).user = decoded;
@@ -30,4 +36,3 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     return res.status(403).json({ message: "Token inválido" });
   }
 };
-

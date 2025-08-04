@@ -13,10 +13,8 @@ export const refreshToken = async (req: Request, res: Response) => {
   }
 
   try {
-    // Verificar si el Refresh Token es válido
     const decoded: any = jwt.verify(refreshToken, REFRESH_SECRET);
 
-    // Confirmar que el Refresh Token existe en la base de datos
     const storedToken = await prisma.refreshToken.findUnique({
       where: { token: refreshToken },
     });
@@ -25,14 +23,12 @@ export const refreshToken = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Refresh Token inválido o expirado" });
     }
 
-    // Generar nuevo Access Token
     const newAccessToken = jwt.sign(
       { id: decoded.id },
       JWT_SECRET,
       { expiresIn: "15m" }
     );
 
-    // (Opcional) Rotar Refresh Token
     const newRefreshToken = jwt.sign({ id: decoded.id }, REFRESH_SECRET, { expiresIn: "7d" });
 
     await prisma.refreshToken.update({
@@ -45,14 +41,14 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       maxAge: 1000 * 60 * 15,
     });
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
