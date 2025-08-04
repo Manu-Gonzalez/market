@@ -3,8 +3,8 @@ import { prisma } from "@config/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "mi_clave_secreta";
-const REFRESH_SECRET = process.env.REFRESH_SECRET || "mi_refresh_secreto";
+const JWT_SECRET = process.env.JWT_SECRET ;
+const REFRESH_SECRET = process.env.REFRESH_SECRET ;
 
 // Interfaces para los tokens
 interface Payload {
