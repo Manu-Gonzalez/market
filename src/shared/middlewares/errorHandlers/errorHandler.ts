@@ -4,12 +4,13 @@ import GenericError from '../../utils/GenericError' ;
 const errorHandler = (err: Error | GenericError, req: Request, res: Response, next: NextFunction) => {
 
     const time = Date.now() ;
-    const method = req.method ; 
-    const url = req.host ;
+
     if (err instanceof GenericError) {
         return res.status(err.statusCode).json({
             message: err.message,
-            method: method,
+            host: req.host,
+            url: req.originalUrl,
+            method: req.method,
             statusCode: err.statusCode,
             time: time,
         });
@@ -17,8 +18,9 @@ const errorHandler = (err: Error | GenericError, req: Request, res: Response, ne
 
   return res.status(500).json({
     message: "Error interno del servidor",
-    host: url,
-    method: method,
+    host: req.host,
+    url: req.originalUrl,
+    method: req.method,
     statusCode: 500,
     time: time,
   });

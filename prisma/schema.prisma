@@ -17,12 +17,22 @@ model Productos {
 }
 
 model Users {
-  id       Int       @id @default(autoincrement())
-  username String    @db.VarChar(40)
-  email    String    @db.VarChar(100) @unique
-  password String    @db.VarChar(100)
-  pedidos  Pedidos[]
+  id        Int            @id @default(autoincrement())
+  username  String         @unique
+  email     String         @unique
+  password  String
+  tokens    RefreshToken[] // Relación uno a muchos
 }
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
 
 model Categorias {
   id        Int         @id @default(autoincrement())

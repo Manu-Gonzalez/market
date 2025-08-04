@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 const jwt = require('jsonwebtoken') ;
 
-const secretKey = process.env.JWT_SECRET || "mi_clave_super_secreta";
+const secretKey = process.env.JWT_SECRET ;
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.cookies?.accessToken ;
 
   if (!authHeader) {
     return res.status(401).json({ message: "Token no encontrado" });
@@ -21,10 +21,13 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
   try {
     const decoded = jwt.verify(token, secretKey);
-    (req as any).user = decoded; 
+    (req as any).user = decoded;
     next();
-  } catch (err) {
-    return res.status(403).json({ message: "Token inválido o expirado" });
+  } catch (err: any) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Access Token expirado" });
+    }
+    return res.status(403).json({ message: "Token inválido" });
   }
 };
 
