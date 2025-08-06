@@ -1,4 +1,4 @@
-import ProductController from './controller'
+import ProductsController from './controller'
 import  express  from 'express';
 import {bodyValidator} from '../shared/middlewares/bodyJsonMiddleware'
 import {paramsValidator} from '../shared/middlewares/paramsMiddleware'
@@ -8,18 +8,18 @@ import Schema from './productSchema';
 
 
 const router = express.Router() ; 
-const controller = new ProductController ;
+const controller = new ProductsController ;
 
-router.get('/', controller.getProducts) ;
+router.get('/', controller.getAll) ;
 
-router.get('/:id', paramsValidator(Schema.productParams), controller.getProductById) ;
+router.get('/:id', paramsValidator(Schema.productParams), controller.getById) ;
 
-router.post('/', paramsValidator(Schema.productBody), controller.createProduct) ;
+router.post('/', paramsValidator(Schema.productBody), controller.create) ;
 
-router.put('/:id', paramsValidator(Schema.productParams), paramsValidator(Schema.productBody), controller.putProduct) ;
+router.put('/:id', paramsValidator(Schema.productParams), paramsValidator(Schema.productBody), controller.update) ;
 
-router.delete('/:id', paramsValidator(Schema.productParams), controller.deleteProduct) ;
+router.delete('/:id', paramsValidator(Schema.productParams), controller.remove) ;
 
-// router.use()
+//router.use()
 
 export default router ;

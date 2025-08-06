@@ -116,6 +116,9 @@
       "@products/*" : ["src/products/*"],
       "@config/*" : ["src/config/*"],
       "@auth/*" : ["src/auth/*"],
+      "@utils/*" : ["src/shared/utils/*"],
+      "types/*" : ["src/shared/types/*"],
+      "@shared/*" : ["src/shared/*"],
       
     }
   }

@@ -1,19 +1,14 @@
-import UserController from './controller'
-import  express  from 'express';
-import {bodyValidator} from '../shared/middlewares/bodyJsonMiddleware'
-import {paramsValidator} from '../shared/middlewares/paramsMiddleware'
-import {queryValidator} from '../shared/middlewares/queryMiddleware'
-import Schema from './userSchemas';
+import UsuarioController from "./controller";
+import express from 'express';
+import { authMiddlewareJWT } from "@auth/middleware";
 
 
+const userRoutes = express.Router();
+const controller = new UsuarioController();
 
-const userRoutes = express.Router() ; 
-const controller = new UserController ;
 
-userRoutes.post('/register', controller.register) ;
+userRoutes.post("/register", controller.register);
 
-userRoutes.post('/login', controller.login) ;
+userRoutes.get("/", authMiddlewareJWT,controller.getAll);
 
-userRoutes.delete('/logout', controller.logout) ;
-
-export default userRoutes ;
+export default userRoutes;

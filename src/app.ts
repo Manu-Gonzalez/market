@@ -1,10 +1,10 @@
 import express from "express";
 import router from "@products/routes";
 import userRoutes from "./users/routes";
-import { verifyToken } from "@auth/verificationToken";
+import authRoutes from "@auth/routes";
+
 import errorHandler from "./shared/middlewares/errorHandlers/errorHandler";
 import notFoundHandler from "./shared/middlewares/errorHandlers/notFoundMiddleware";
-import { refreshToken } from "@auth/refreshToken";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -16,18 +16,14 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-
 app.use(express.json());
 
+app.use("/auth", authRoutes);
 app.use("/", userRoutes);
-app.post("/refresh", refreshToken);
 app.use("/products", router);
 
+
 app.use(notFoundHandler);
-app.use(verifyToken);
-app.use(refreshToken);
-
-
 app.use(errorHandler);
 
 

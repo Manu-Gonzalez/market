@@ -1,76 +1,56 @@
-import { NextFunction, Request, Response } from 'express';
-import { prisma } from '../config/prisma';
+import { Request, Response } from "express";
+import * as ProductosService from "./service";
+import { ExpressFunction } from "src/shared/types/ExpressFunctionType";
+import GenericError from "@utils/GenericError";
 
-interface Product {
-  nombre: string;
-  precio_unidad: number;
-  id_categoria: number;
-}
-
-type ControllerFunctions = (req: Request, res: Response, next: NextFunction) => void
-
-export default class ProductController {
-  public  getProducts : ControllerFunctions = async (req, res, next) => {
+export default class ProductsController {
+  public getAll: ExpressFunction = async (req, res, next) => {
     try {
-      const products = await prisma.productos.findMany({include: { categoria: true }});
-      return res.status(200).json(products);
-    } catch (err) {
-      return next(err);
+      const productos = await ProductosService.getAll();
+      res.json(productos);
+    } catch (error: any) {
+      next(new GenericError(error.message, 500));
     }
   }
 
-  public getProductById : ControllerFunctions = async (req, res, next) => {
+  public getById: ExpressFunction = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const product = await prisma.productos.findFirst({ where: { id }, include: { categoria: true }});
-
-      if (!product) return res.status(404).json({ message: 'Producto no encontrado' });
-
-      return res.status(200).json(product);
-    } catch (err) {
-      return next(err);
+      const producto = await ProductosService.getById(id);
+      res.json(producto);
+    } catch (error: any) {
+      next(new GenericError(error.message, 404));
     }
   }
 
-  public createProduct : ControllerFunctions = async (req, res, next) => {
+  public create: ExpressFunction = async (req, res, next) => {
     try {
-      const { nombre, precio_unidad, id_categoria }: Product = req.body;
-
-      const product = await prisma.productos.create({
-        data: { nombre, precio_unidad, id_categoria },
-      });
-
-      return res.status(201).json(product);
-    } catch (err) {
-      return next(err);
+      const { nombre, precio_unidad, id_categoria } = req.body;
+      const nuevoProducto = await ProductosService.create({ nombre, precio_unidad, id_categoria });
+      res.status(201).json(nuevoProducto);
+    } catch (error: any) {
+      next(new GenericError(error.message, 400));
     }
   }
 
-  public deleteProduct : ControllerFunctions = async (req, res, next) => {
+  public update: ExpressFunction = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-
-      await prisma.productos.delete({ where: { id } });
-
-      return res.status(204).send();
-    } catch (err) {
-      return next(err);
+      const { nombre, precio_unidad, id_categoria } = req.body;
+      const productoActualizado = await ProductosService.update(id, { nombre, precio_unidad, id_categoria });
+      res.json(productoActualizado);
+    } catch (error: any) {
+      next(new GenericError(error.message, 400));
     }
   }
 
-  public putProduct : ControllerFunctions = async (req, res, next) => {
+  public remove: ExpressFunction = async (req, res, next) => {
     try {
       const id = parseInt(req.params.id);
-      const { nombre, precio_unidad, id_categoria }: Product = req.body;
-
-      const updated = await prisma.productos.update({
-        where: { id },
-        data: { nombre, precio_unidad, id_categoria },
-      });
-
-      return res.status(200).json(updated);
-    } catch (err) {
-      return next(err);
+      await ProductosService.remove(id);
+      res.json({ message: "Producto eliminado" });
+    } catch (error: any) {
+      next(new GenericError(error.message, 400));
     }
   }
 }
