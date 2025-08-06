@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 export const registerUserSchema = z.object({
-    nombre: z
+    username: z
         .string()
-        .min(2, "El nombre debe tener al menos 2 caracteres")
-        .max(50, "El nombre no puede superar los 50 caracteres")
+        .min(2, "El username debe tener al menos 2 caracteres")
+        .max(50, "El username no puede superar los 50 caracteres")
         .trim()
-        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras y espacios"),
+        .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El username solo puede contener letras y espacios"),
 
     email: z
         .string()

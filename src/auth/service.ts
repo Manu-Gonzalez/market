@@ -9,7 +9,7 @@ import {
   shouldRotate
 } from "@utils/tokens";
 
-const REFRESH_LIFETIME = 7 * 24 * 60 * 60 * 1000; // 7 días
+const REFRESH_LIFETIME = 1000 * 60 * 60 * 24 * 7; 
 
 export async function login(email: string, password: string, device: string, ip?: string) {
   const user = await prisma.user.findUnique({ where: { email } });
@@ -18,12 +18,10 @@ export async function login(email: string, password: string, device: string, ip?
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) throw new Error("Credenciales inválidas");
 
-  // Generar tokens
   const accessToken = generateAccessToken({ userId: user.id });
   const refreshToken = generateRefreshToken();
   const refreshTokenHash = await hashToken(refreshToken);
 
-  // Crear sesión
   await prisma.session.create({
     data: {
       userId: user.id,
@@ -33,7 +31,6 @@ export async function login(email: string, password: string, device: string, ip?
       expiresAt: getRefreshExpiryDate(),
     }
   });
-
   return { accessToken, refreshToken };
 }
 

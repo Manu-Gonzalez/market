@@ -7,9 +7,8 @@ const REFRESH_LIFETIME =  1000 * 60 * 60 * 24 * 7; // 7 días
 const ROTATION_THRESHOLD = 1000 * 60 * 60 * 24;   // Rotar si falta < 1 día
 
 export function generateAccessToken(payload: object) {
-  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: "1m" });
 }
-
 export function generateRefreshToken() {
   return jwt.sign({}, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_LIFETIME });
 }

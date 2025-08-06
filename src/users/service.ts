@@ -9,26 +9,28 @@ export async function registerUser(data: RegisterUserInput) {
   });
   if (existingUser) throw new Error("El correo ya está registrado");
 
+  const {username, email, password} = data;
+
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(data.password, salt);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   const user = await prisma.user.create({
     data: {
-      nombre: data.nombre,
-      email: data.email,
+      username,
+      email,
       password: hashedPassword
     }
   });
 
   return {
     id: user.id,
-    nombre: user.nombre,
+    username: user.username,
     email: user.email,
   };
 }
 
 export async function getAllUsers() {
   return await prisma.user.findMany({
-    select: { id: true, nombre: true, email: true }
+    select: { id: true, username: true, email: true }
   });
 }

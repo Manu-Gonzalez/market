@@ -1,9 +1,16 @@
 import { verifyAccessToken } from "@utils/tokens";
 import GenericError from "@utils/GenericError";
-import { ExpressFunction } from "src/shared/types/ExpressFunctionType";
+import { ExpressAsyncFunction } from "src/shared/types/ExpressFunctionType";
+import { refreshSession } from "./service";
 
-export const authMiddlewareJWT: ExpressFunction = (req, res, next) => {
+
+export const authMiddlewareJWT: ExpressAsyncFunction = async (req, res, next) => {
   const headerAuth = req.headers.authorization?.split(" ");
+  const refreshTokensSession = req.cookies?.refreshToken;
+
+  if (!refreshTokensSession) {
+    return next(new GenericError("Refresh token no proporcionado", 401));
+  }
 
   if(!headerAuth) {
     return next(new GenericError("Autorizacion requerida, esquema de autorizacion y token", 401));
@@ -19,7 +26,17 @@ export const authMiddlewareJWT: ExpressFunction = (req, res, next) => {
     const payload = verifyAccessToken(token) ;
     (req as any).user = payload;
     next();
-  } catch {
+  } catch (error: any) {
+    if (error.name === "TokenExpiredError") {
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await refreshSession(refreshTokensSession, req.headers["user-agent"] as string);
+      res
+        .cookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        })
+        .json({ newAccessToken });
+    }
     return next(new GenericError("Token inválido o expirado", 403));
   }
 }

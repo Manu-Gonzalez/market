@@ -5,11 +5,19 @@ import GenericError from "@utils/GenericError";
 
 export default class AuthController {
   public login : ExpressFunction = async (req, res, next) => {
-    const { email, password, device } = req.body;
+    const device  = req.headers["user-agent"];
+    if (!device) {
+      return next(new GenericError("Falta el header 'user-agent'", 400));
+    }
+    const { email, password} = req.body;
     try {
       const { accessToken, refreshToken } = await AuthService.login(email, password, device, req.ip);
       res
-        .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: "strict" })
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        })
         .json({ accessToken });
     } catch (error: any) {
       next(new GenericError(error.message, 401));
@@ -17,15 +25,24 @@ export default class AuthController {
   }
 
   public refresh : ExpressFunction = async (req, res, next) => {
-    const { refreshToken } = req.cookies;
-    const { device } = req.body;
+    const { refreshTokensSession } = req.cookies;
+    const device  = req.headers["user-agent"];
+
+    if (!refreshTokensSession || !device) {
+      return next(new GenericError("Refresh token o dispositivo no proporcionados", 400));
+    }
+
     try {
-      const { accessToken, refreshToken: newRefreshToken } = await AuthService.refreshSession(refreshToken, device);
+      const { accessToken, refreshToken } = await AuthService.refreshSession(refreshTokensSession, device);
       res
-        .cookie("refreshToken", newRefreshToken, { httpOnly: true, secure: false, sameSite: "strict" })
+        .cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+        })
         .json({ accessToken });
     } catch (error: any) {
-      next(new GenericError(error.message, 403));
+      next(new GenericError("", 403));
     }
   }
 
